@@ -1,0 +1,262 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--green:#1ED760;--dkgreen:#0a8c38;--bg:#000;--dim:#0f2b0f;--panel:#050f05}
+  body{background:transparent}
+  #app{display:flex;gap:24px;align-items:flex-start;padding:8px 0;font-family:'Share Tech Mono',monospace}
+  .phone{width:220px;flex-shrink:0;border-radius:28px;background:#111;border:2px solid #222;padding:10px;box-shadow:0 0 0 1px #333}
+  .screen{background:#000;border-radius:18px;overflow:hidden;height:420px;position:relative}
+  /* boot screen */
+  #bootScr{position:absolute;inset:0;padding:16px;display:flex;flex-direction:column;background:#000}
+  .logo-txt{color:var(--green);font-size:7px;line-height:1.25;text-align:center;white-space:pre;letter-spacing:0}
+  .tagline{color:#3a7a3a;font-size:6px;text-align:center;margin-top:6px;letter-spacing:.5px}
+  .log-box{flex:1;margin-top:10px;overflow:hidden;background:#050f05;border:1px solid #0d1f0d;border-radius:4px;padding:6px}
+  #logTxt{color:#00ff41;font-size:6px;line-height:1.5;white-space:pre-wrap;word-break:break-all}
+  .prog-wrap{margin-top:8px}
+  .prog-track{background:#0d1f0d;height:4px;border-radius:2px;overflow:hidden}
+  .prog-fill{background:var(--green);height:4px;width:0%;border-radius:2px;transition:width .1s}
+  .prog-pct{color:var(--green);font-size:7px;text-align:right;margin-top:2px}
+  /* clock screen */
+  #clockScr{position:absolute;inset:0;padding:14px 12px;display:none;flex-direction:column;background:#000}
+  .top-bar{display:flex;align-items:center;gap:6px;border-bottom:1px solid #0d1f0d;padding-bottom:8px;margin-bottom:8px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+  .bar-txt{color:#2a5c2a;font-size:7px;flex:1}
+  .bar-r{color:#1a2e1a;font-size:7px}
+  .day-lbl{color:#2a5c2a;font-size:8px;text-align:center;letter-spacing:3px}
+  .big-time{color:var(--green);font-size:42px;font-weight:700;text-align:center;line-height:1;margin:6px 0 0;text-shadow:0 0 18px rgba(30,215,96,.4)}
+  .cursor{display:inline-block;width:2px;height:34px;background:var(--green);vertical-align:middle;animation:blink .5s step-end infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .date-lbl{color:#1f4d1f;font-size:9px;text-align:center;margin-top:6px;letter-spacing:1px}
+  .divider{border:none;border-top:1px solid #0d1f0d;margin:10px 0}
+  .prompt{color:#1f4020;font-size:6.5px;text-align:center}
+  .stats{display:flex;justify-content:center;gap:14px;margin-top:10px}
+  .stat{color:#122012;font-size:6px}
+  .scanline{position:absolute;left:0;right:0;height:2px;background:rgba(30,215,96,.07);animation:scan 3.5s linear infinite;pointer-events:none}
+  @keyframes scan{from{top:-2px}to{top:100%}}
+  /* fade transitions */
+  .fade-out{animation:fout .6s forwards}
+  .fade-in{animation:fin .7s forwards}
+  @keyframes fout{to{opacity:0}}
+  @keyframes fin{from{opacity:0}to{opacity:1}}
+  /* right panel */
+  #panel{flex:1;min-width:0}
+  .section{margin-bottom:18px}
+  .sec-hd{font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px}
+  .code-block{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--color-text-primary);line-height:1.6;white-space:pre;overflow-x:auto}
+  .badge{display:inline-block;background:var(--color-background-success);color:var(--color-text-success);font-size:10px;padding:2px 8px;border-radius:var(--border-radius-md);margin-right:6px;margin-bottom:4px}
+  .file-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+  .file-row:last-child{border-bottom:none}
+  .file-name{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--color-text-primary);flex:1}
+  .file-path{font-size:10px;color:var(--color-text-secondary)}
+</style>
+
+<div id="app">
+
+  <!-- Phone mockup -->
+  <div>
+    <div style="font-size:10px;color:var(--color-text-secondary);text-align:center;margin-bottom:6px;">Live preview</div>
+    <div class="phone">
+      <div class="screen">
+        <!-- Boot screen -->
+        <div id="bootScr">
+          <div class="logo-txt">
+  ██╗  ██╗ █████╗ ██╗     ██╗
+  ██║ ██╔╝██╔══██╗██║     ██║
+  █████╔╝ ███████║██║     ██║
+  ██╔═██╗ ██╔══██║██║     ██║
+  ██║  ██╗██║  ██║███████╗██║
+  ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝</div>
+          <div class="tagline">[ The quieter you become, the more you hear ]</div>
+          <div class="log-box"><div id="logTxt"></div></div>
+          <div class="prog-wrap">
+            <div class="prog-track"><div class="prog-fill" id="pf"></div></div>
+            <div class="prog-pct" id="pp">0%</div>
+          </div>
+        </div>
+        <!-- Clock screen -->
+        <div id="clockScr">
+          <div class="scanline"></div>
+          <div class="top-bar">
+            <div class="dot"></div>
+            <div class="bar-txt">root@kali — OnTime v1.0</div>
+            <div class="bar-r">[SECURE]</div>
+          </div>
+          <div class="day-lbl" id="dayD">SUNDAY</div>
+          <div style="text-align:center">
+            <span class="big-time" id="timeD">00:00:00</span><span class="cursor"></span>
+          </div>
+          <div class="date-lbl" id="dateD">2025-01-01</div>
+          <hr class="divider">
+          <div class="prompt" id="prmpt">root@kali:~$ time --sync</div>
+          <div class="stats">
+            <div class="stat">CPU 0.1%</div>
+            <div class="stat">MEM 128MB</div>
+            <div class="stat">UPTIME 99.9%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:9px;color:var(--color-text-secondary);text-align:center;margin-top:6px;">Tap phone to restart boot</div>
+    <div style="text-align:center;margin-top:6px">
+      <button onclick="restartBoot()" style="font-size:10px;padding:4px 14px;cursor:pointer">↺ Restart boot</button>
+    </div>
+  </div>
+
+  <!-- Right: code overview -->
+  <div id="panel">
+
+    <div class="section">
+      <div class="sec-hd">Files generated</div>
+      <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px">
+        <div class="file-row">
+          <div class="file-name">MainActivity.java</div>
+          <div class="file-path">src/main/java/com/kali/ontime/</div>
+        </div>
+        <div class="file-row">
+          <div class="file-name">activity_main.xml</div>
+          <div class="file-path">src/main/res/layout/</div>
+        </div>
+        <div class="file-row">
+          <div class="file-name">AndroidManifest.xml</div>
+          <div class="file-path">src/main/</div>
+        </div>
+        <div class="file-row">
+          <div class="file-name">themes.xml</div>
+          <div class="file-path">src/main/res/values/</div>
+        </div>
+        <div class="file-row">
+          <div class="file-name">dot_green.xml</div>
+          <div class="file-path">src/main/res/drawable/</div>
+        </div>
+        <div class="file-row">
+          <div class="file-name">build.gradle</div>
+          <div class="file-path">app/</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-hd">Boot sequence flow</div>
+      <div class="code-block">onCreate()
+  └─ initViews()
+  └─ startBootSequence()
+       ├─ Logo fade-in  (800ms)
+       ├─ Tagline fade  (600ms)
+       └─ startBootLogs()
+            ├─ 22 kernel log lines
+            ├─ Progress 0 → 100%
+            └─ transitionToClockScreen()
+                 ├─ bootScreen fade OUT
+                 ├─ clockScreen fade IN
+                 └─ startClock() + animations</div>
+    </div>
+
+    <div class="section">
+      <div class="sec-hd">Permissions & config</div>
+      <div>
+        <span class="badge">INTERNET</span>
+        <span class="badge">WAKE_LOCK</span>
+        <span class="badge">VIBRATE</span>
+        <span class="badge">RECEIVE_BOOT_COMPLETED</span>
+      </div>
+      <div style="margin-top:8px" class="code-block">minSdk    21  (Android 5.0)
+targetSdk 34  (Android 14)
+orientation   portrait · fullscreen
+theme         NoActionBar · black bg</div>
+    </div>
+
+    <div class="section">
+      <div class="sec-hd">Clock animations</div>
+      <div class="code-block">scanline   translationY  -1800→1800px  3.5s  ∞
+cursor     alpha          1→0          0.5s  ∞
+timeflick  alpha       0→1→0.7→1       400ms  once
+progress   ofInt      0→100           boot phase</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const logs = [
+  "[    0.000000] Booting Kali Linux...",
+  "[    0.000001] BIOS-provided physical RAM map:",
+  "[    0.125000] Initializing cgroup subsystems",
+  "[    0.250000] Starting kernel cryptography services",
+  "[    0.375000] Loading network drivers...",
+  "[    0.500000] eth0: link up 1000Mbps full-duplex",
+  "[    0.650000] Starting system logger: syslogd",
+  "[    0.800000] Mounting virtual filesystems...",
+  "[    1.000000] Starting udev daemon...",
+  "[    1.200000] Loading security modules: AppArmor",
+  "[    1.400000] Starting OpenSSH server daemon",
+  "[    1.600000] Initializing Metasploit Framework",
+  "[    1.800000] Loading Nmap network scanner",
+  "[    2.000000] Starting Wireshark capture service",
+  "[    2.200000] Configuring iptables firewall rules",
+  "[    2.400000] Loading exploit database...",
+  "[    2.600000] Mounting encrypted volumes...",
+  "[    2.800000] Starting anonymization services",
+  "[    3.000000] System clock synchronized: NTP",
+  "[    3.200000] OnTime Clock Module: INITIALIZED",
+  "[    3.400000] All systems operational.",
+  "[    3.500000] Welcome to Kali Linux."
+];
+
+let step=0, timer=null, clockTimer=null;
+
+function pad(n){return String(n).padStart(2,'0')}
+function updateClock(){
+  const n=new Date();
+  const days=['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+  document.getElementById('timeD').textContent=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
+  document.getElementById('dateD').textContent=n.getFullYear()+'-'+pad(n.getMonth()+1)+'-'+pad(n.getDate());
+  document.getElementById('dayD').textContent=days[n.getDay()];
+  document.getElementById('prmpt').textContent='root@kali:~$ time --sync ['+pad(n.getSeconds())+'s]';
+}
+
+function showClock(){
+  const b=document.getElementById('bootScr');
+  const c=document.getElementById('clockScr');
+  b.style.animation='fout .6s forwards';
+  setTimeout(()=>{
+    b.style.display='none';
+    c.style.display='flex';
+    c.style.animation='fin .7s forwards';
+    updateClock();
+    clockTimer=setInterval(updateClock,1000);
+  },600);
+}
+
+function runBoot(){
+  step=0;
+  const lt=document.getElementById('logTxt');
+  const pf=document.getElementById('pf');
+  const pp=document.getElementById('pp');
+  lt.textContent='';
+  pf.style.width='0%';
+  pp.textContent='0%';
+  function next(){
+    if(step>=logs.length){setTimeout(showClock,600);return;}
+    lt.textContent+=(step>0?'\n':'')+logs[step];
+    step++;
+    const pct=Math.round(step/logs.length*100);
+    pf.style.width=pct+'%';
+    pp.textContent=pct+'%';
+    const delay=step<5?110:step<15?150:190;
+    timer=setTimeout(next,delay);
+  }
+  next();
+}
+
+function restartBoot(){
+  clearTimeout(timer);clearInterval(clockTimer);
+  const b=document.getElementById('bootScr');
+  const c=document.getElementById('clockScr');
+  c.style.display='none';c.style.animation='';
+  b.style.display='flex';b.style.animation='';b.style.opacity='1';
+  runBoot();
+}
+
+runBoot();
+</script>
