@@ -5,4 +5,4 @@
 [Open index.html on GitHub](https://github.com/Muhammednihalmp/android-kali/blob/main/Screenshot%202026-04-05%20004354.png)
 
 ## Live Demo
-<img src="https://github.com/Muhammednihalmp/android-kali/blob/main/Screenshot%202026-04-05%20004354.png" width="22%" alt="Home Screen" />
+<img src="https://github.com/Muhammednihalmp/android-kali/blob/main/Screenshot%202026-04-05%20004354.png" width="100%" alt="Home Screen" />
